@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class State(Enum):
-    # IDLE
-    pass
+    IDLE = 0
+    INPUT = 1
+    QA = 2
 
 
 class GameState:
-    # state: State = ;
-    pass
+    state: State = State.IDLE

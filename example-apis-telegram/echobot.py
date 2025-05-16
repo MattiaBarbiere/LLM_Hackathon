@@ -54,7 +54,11 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     """Send a message when the command /help is issued."""
     print(context)
     await update.message.reply_text("Help!")
+state = GameState
 
+# async def msg_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+#     if game_state is IDLE
+#         idle_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
