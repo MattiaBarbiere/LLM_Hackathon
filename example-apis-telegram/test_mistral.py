@@ -3,11 +3,8 @@ Using https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503
 
 """
 
-import requests
 from keys import HUGGING_FACE_KEY
 import time
-import base64
-
 
 n_words = 10   # negative number means no limit
 question = "Who won the world cup in 2010?"
