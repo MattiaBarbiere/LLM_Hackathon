@@ -112,7 +112,7 @@ def choose_object(
             "schema": ChosenObject.model_json_schema()
         }
     )
-    return response
+    return eval(response)
 
 def verify_guess(
         client: Together,
