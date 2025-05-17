@@ -145,6 +145,8 @@ def verify_guess(
                     player so that they are incentivized to guess correctly. Gradually make this hint more and more insulting.
                     The hint should be in the message field if the player has not guessed the correct word.
                     The hints you have already given are: {context.bot_data["game_state"].hints}. Make the hints different from the previous ones.
+                    Very important: If the user guesses the object correctly, return a message saying congratulation that they guessed correctly, and then
+                    compliment them on their intelligence. Only do this if the guess is correct.
 
                     Here is an example iteraction of the game:
 
