@@ -41,5 +41,6 @@ async def qa_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     # Handle normal QA interaction
+    # response is a dictionary
     response = verify_guess(query, llm_model, GameState.secret)
-    await update.message.reply_text(response)
+    await update.message.reply_text(response['message'])
