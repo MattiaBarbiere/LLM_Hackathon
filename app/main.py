@@ -145,7 +145,7 @@ def main() -> None:
     state_handler.register_handler(State.QA, filters.TEXT & ~filters.COMMAND, qa_text)
 
     # Initialize with the starting state (IDLE)
-    state_handler.update_handlers(State.INPUT)
+    state_handler.update_handlers(State.IDLE)
 
     # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)
