@@ -37,6 +37,7 @@ from game_state import GameState, State
 from handlers.input_state import input_image, input_text, input_audio
 from utils.utils import delete_temp_saving
 from utils.query import generate_image
+from utils.riddles import generate_riddle
 
 # Enable logging
 logging.basicConfig(
@@ -162,3 +163,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+    # generate_hangman_image()
+    # print(generate_riddle())
