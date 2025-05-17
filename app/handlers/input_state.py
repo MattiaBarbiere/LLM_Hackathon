@@ -34,14 +34,14 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     object_from_image = choose_object(tmp_photo, model=llm_model)["object"]
 
     # Get the objects from the image using the LLM
-    objects_from_caption = llm_objects_from_text(caption)
+    objects_from_caption = llm_objects_from_text(caption) if caption else []
 
     # Print the output if DEBUG is True
     if DEBUG:
         logging.info(f"Image: {tmp_photo}")
         logging.info(f"Caption: {caption}")
 
-    object_and_caption = [*objects_from_caption, object_from_image]
+    object_and_caption = object_from_image + objects_from_caption
 
     # Save the objects to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(object_and_caption)

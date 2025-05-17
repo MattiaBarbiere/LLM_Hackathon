@@ -2,7 +2,7 @@ import os
 
 from utils.config import *
 from utils.image_utils import encode_image_to_base64
-from utils.types import (
+from utils.types_classes import (
     ChosenObject,
     GuessVerificationObject
 )

@@ -1,6 +1,6 @@
 import json
 from utils.config import client
-from utils.types import ObjectToList
+from utils.types_classes import ObjectToList
 
 def llm_objects_from_text(input_text: str,
                         # model: str = "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
