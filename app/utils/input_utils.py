@@ -18,7 +18,7 @@ async def check_input_length(update: Update, context: ContextTypes.DEFAULT_TYPE)
             update,
             context,
             State.QA,
-            message=f"Got: {context.bot_data["game_state"].inputs}\nEnough inputs, now to the Q&A State!"
+            message=f"Got: {",".join(context.bot_data["game_state"].inputs)}\nEnough inputs, now to the Q&A State!"
         )
     else:
         await update.message.reply_text(

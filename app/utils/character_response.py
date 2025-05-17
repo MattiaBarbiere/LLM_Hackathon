@@ -1,10 +1,9 @@
 import os
-
+import asyncio
 import requests
 from io import BytesIO
 from utils.character_generator import EmotionalState
 import random
-import audiofile
 
 async def send_character_response(update, context, text, emotion=None, additional_context=""):
     """
@@ -38,6 +37,9 @@ async def send_character_response(update, context, text, emotion=None, additiona
         ]
         emotion = random.choice(emotions)
 
+    # Send initial loading message
+    loading_message = await update.message.reply_text(f"{character.name} is thinking...")
+
     # Generate character image with the emotion
     success, image_url = character.generate_emotional_image(
         update.message.from_user.id,
@@ -47,6 +49,9 @@ async def send_character_response(update, context, text, emotion=None, additiona
 
     if success:
         try:
+            # Update loading message
+            await loading_message.edit_text(f"{character.name} is crafting a response...")
+
             # Download image
             image_response = requests.get(image_url)
             image_data = BytesIO(image_response.content)
@@ -54,11 +59,15 @@ async def send_character_response(update, context, text, emotion=None, additiona
             # Ensure temp directory exists
             os.makedirs("./temp_saving", exist_ok=True)
 
+            # Update loading message
+            await loading_message.edit_text(f"{character.name} is preparing to speak...")
+
             # Generate voice message
             character.generate_voice_message(text)
-
-            # Use the file path directly instead of loading it as an array
             voice_file_path = "./temp_saving/hint.wav"
+
+            # Delete the loading message
+            await loading_message.delete()
 
             # Send image with caption
             await update.message.reply_photo(
@@ -77,5 +86,6 @@ async def send_character_response(update, context, text, emotion=None, additiona
             return False
     else:
         # Fallback to text only
+        await loading_message.delete()
         await update.message.reply_text(text)
         return False
