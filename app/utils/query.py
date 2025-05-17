@@ -135,7 +135,7 @@ def verify_guess(
                     The object I chose is {context.bot_data["game_state"].secret_word}. In your answer just return whether the guess is correct or not. 
                     If the guess is correct, return 1 in the correct field and 'Correct!' in the model_output field. 
                     If not, return 0 and 'Incorrect!'
-                    If the user input is wrong, return a hint. This hint should be written as a riddle. It should be helpful in the beginning for
+                    If the user input is wrong, return a hint. This hint should be written as a riddle. It should be helpful and a bit long in the beginning for
                     the player to get the right answer. However, the hint should not be too obvious and the user has currently guessed 
                     {len(context.bot_data["game_state"].guesses)} times. If this number starts getting too high (above 4), 
                     the player is making fun of you an thus you and you must start making the riddles slightly insulting to the 
