@@ -7,6 +7,7 @@ from utils.types_classes import (
     ChosenObject,
     GuessVerificationObject
 )
+from telegram.ext import ContextTypes
 
 
 def query_llm(input_text, user_id):
@@ -119,19 +120,27 @@ def choose_object(
 
 def verify_guess(
         guess: str,
-        chosen_object: str
+        context: ContextTypes.DEFAULT_TYPE
 ):
-    print(guess, chosen_object)
+    print(guess, context.bot_data["game_state"].secret_word)
+
+    context.bot_data["game_state"].guesses.append(guess)
+
     response = client.chat.completions.create(
         model=llm_model,
         messages=[
             {
                 "role": "system",
                 "content": f"""
-                    The object I chose is {chosen_object}. In your answer just return whether the guess is correct or not. 
+                    The object I chose is {context.bot_data["game_state"].secret_word}. In your answer just return whether the guess is correct or not. 
                     If the guess is correct, return 1 in the correct field and 'Correct!' in the model_output field. 
                     If not, return 0 and 'Incorrect!'
-                    If the user input is wrong, return a hint.
+                    If the user input is wrong, return a hint. This hint should be written as a riddle. It should be helpful in the beginning for
+                    the player to get the right answer. However, the hint should not be too obvious and the user has currently guessed 
+                    {len(context.bot_data["game_state"].guesses)} times. If this number starts getting too high (above 4), 
+                    the player is making fun of you an thus you and you must start making the riddles slightly insulting to the 
+                    player so that they are incentivized to guess correctly. Gradually make this hint more and more insulting.
+                    The hint should be in the message field if the player has not guessed the correct word.
 
                     Here is an example iteraction of the game:
 
@@ -150,7 +159,7 @@ def verify_guess(
                         AI: 
                             'correct': 'False',
                             'model_output': 'Incorrect!'
-                            'message': 'Hhhm, your guess is not correct. You would use this to object eat not drink...'
+                            'message': 'I am round but not a ball. I hold food, not a drink. What am I?'
                 """
             },
             {

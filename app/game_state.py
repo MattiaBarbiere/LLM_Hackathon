@@ -19,6 +19,9 @@ class GameState:
         # The secret word
         self.secret_word = None
 
+        # The guesses made by the user so far
+        self.guesses = []
+
     def transition_to(self, new_state, context=None):
         """Transition to a new state with optional context data"""
         old_state = self.state
