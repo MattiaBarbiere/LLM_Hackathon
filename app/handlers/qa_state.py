@@ -7,7 +7,7 @@ from telegram.ext import ContextTypes
 from PIL import Image
 import numpy as np
 
-from game_state import State
+from game_state import State, GameState
 from utils.config import *
 from utils.query import *
 from utils.transitions import transition_state
@@ -41,5 +41,5 @@ async def qa_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     # Handle normal QA interaction
-    response = query_llm(query, user_id)
+    response = verify_guess(query, llm_model, GameState.secret)
     await update.message.reply_text(response)
