@@ -25,11 +25,11 @@ client = Together(
 async def msg_handler_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Router for messages"""
 
-    state = context.bot_data["game_state"]
+    game_state = context.bot_data["game_state"]
 
-    if state == State.INPUT:
+    if game_state.state == State.INPUT:
         await input_text(update, context)
-    elif state == State.QA:
+    elif game_state.state == State.QA:
         await qa_text(update, context)
     else:
         await update.message.reply_text(f"got text: {update.message.text}")

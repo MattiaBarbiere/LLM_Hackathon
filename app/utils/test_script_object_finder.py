@@ -1,5 +1,5 @@
 from together import Together
-from keys import TOGETHER_AI_KEY
+from keys import TOGETHER_AI
 import os
 import base64
 from pydantic import BaseModel, Field
@@ -8,11 +8,13 @@ from pydantic import BaseModel, Field
 class ChosenObject(BaseModel):
     object: str = Field("The object chosen from the image.")
 
+
 SystemPrompt = """
     You are an AI game engine. We are going to play 'I spy with my little eye'. 
     I will give you a list of images and you will have to choose an object you see in one of these images and return it to me. 
     In your response, you should only return the name of the object you see in the image. Try to keep the input limited to one word.
     """
+
 
 def get_together_response(
         client: Together,
@@ -42,6 +44,7 @@ def get_together_response(
     )
     return response
 
+
 def get_images(image_folder) -> list:
     # get images from the folder path
     image_list = [
@@ -50,10 +53,12 @@ def get_images(image_folder) -> list:
     ]
     return image_list[1:2]
 
+
 def encode_image_to_base64(image_path):
     """Convert an image to base64 encoding"""
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
+
 
 def verify_guess(
         client: Together,
@@ -94,8 +99,9 @@ def verify_guess(
     )
     return response
 
+
 def main():
-    client = Together(api_key=TOGETHER_AI_KEY)
+    client = Together(api_key=TOGETHER_AI)
 
     image_list = get_images("./test_images/")
     #response = get_together_response(client, image_list, "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo")
@@ -103,7 +109,7 @@ def main():
 
     try:
         response = get_together_response(client, image_list, "Qwen/Qwen2.5-VL-72B-Instruct")
-        
+
         chosen_object = eval(response.choices[0].message.content)
 
         for chunk in response:
@@ -114,14 +120,14 @@ def main():
         print()
     except Exception as e:
         print()
-    
+
     # begin guessing
     finished = False
     while not finished:
         user_input = input("\nGuess the object: ")
         try:
             response = verify_guess(client, user_input, "Qwen/Qwen2.5-VL-72B-Instruct", chosen_object["object"])
-            
+
             for chunk in response:
                 if hasattr(chunk.choices[0].delta, 'content'):
                     content = chunk.choices[0].delta.content
@@ -132,7 +138,7 @@ def main():
             print()
         except IndexError as e:
             pass
-    
+
     print("\nGame over!")
 
 
