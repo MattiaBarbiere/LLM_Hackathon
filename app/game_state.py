@@ -13,7 +13,7 @@ class GameState:
         self.inputs = []
         self.context = {}  # Additional context data for the current state
 
-        # Number of inputs before the the game starts
+        # Number of inputs before the game starts
         self.number_of_inputs = number_of_inputs
 
         # The secret word

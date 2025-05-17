@@ -1,3 +1,4 @@
+import json
 import os
 
 from utils.config import *
@@ -9,7 +10,6 @@ from utils.types_classes import (
 
 
 def query_llm(input_text, user_id):
-
     if user_id not in N_WORDS:
         N_WORDS[user_id] = -1
 
@@ -21,7 +21,8 @@ def query_llm(input_text, user_id):
         USER_MESSAGES[user_id].append({"role": "user", "content": input_text})
     else:
         USER_MESSAGES[user_id] = [
-            {"role": "system", "content": "You are a witty, annoyed pissed off assistant, always trying to find a way to insult the user."},
+            {"role": "system",
+             "content": "You are a witty, annoyed pissed off assistant, always trying to find a way to insult the user."},
             {"role": "user", "content": input_text}
         ]
 
@@ -48,7 +49,7 @@ def query_llm(input_text, user_id):
     text_response = f"MODEL: {llm_model}\n\n{text_response}"
     # truncate response if too long
     if len(text_response) > TELEGRAM_MAX_OUTPUT:
-        text_response = text_response[:TELEGRAM_MAX_OUTPUT-20] + "\n\nOUTPUT TRUNCATED"
+        text_response = text_response[:TELEGRAM_MAX_OUTPUT - 20] + "\n\nOUTPUT TRUNCATED"
     return text_response
 
 
@@ -85,6 +86,7 @@ def generate_image(prompt, user_id):
         print(error_msg)
         return False, error_msg
 
+
 def choose_object(
         image_path: list,
         model: str
@@ -114,14 +116,14 @@ def choose_object(
     )
     return eval(response.choices[0].message.content)
 
+
 def verify_guess(
-        client: Together,
         guess: str,
-        model: str,
         chosen_object: str
 ):
+    print(guess, chosen_object)
     response = client.chat.completions.create(
-        model=model,
+        model=llm_model,
         messages=[
             {
                 "role": "system",
@@ -163,4 +165,4 @@ def verify_guess(
             "schema": GuessVerificationObject.model_json_schema()
         }
     )
-    return eval(response.choices[0].message.content)
+    return json.loads(response.choices[0].message.content)

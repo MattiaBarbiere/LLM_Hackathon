@@ -12,6 +12,7 @@ async def check_input_length(update: Update, context: ContextTypes.DEFAULT_TYPE)
         # Randomly choose an object from the inputs
         obj = random.choice(context.bot_data["game_state"].inputs)
         print(f"Chosen object: {obj}")
+        context.bot_data["game_state"].secret_word = obj
         await transition_state(
             update,
             context,

@@ -78,9 +78,8 @@ async def input_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     """
     audio_file = await update.message.voice.get_file()
 
-
     # load audio into numpy array
-    tmp_file = "app/temp_saving/audio.wav"
+    tmp_file = "./temp_saving/audio.wav"
     await audio_file.download_to_drive(tmp_file)
 
     # Get the text from the audio 
