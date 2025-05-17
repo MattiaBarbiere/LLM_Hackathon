@@ -2,7 +2,7 @@ import requests
 from io import BytesIO
 from utils.character_generator import EmotionalState
 import random
-
+import audiofile
 
 async def send_character_response(update, context, text, emotion=None, additional_context=""):
     """
@@ -51,6 +51,7 @@ async def send_character_response(update, context, text, emotion=None, additiona
 
             # Generate voice message
             voice_message = character.generate_voice_message(text)
+            voice_message = audiofile.read(voice_message, always_2d=True)
 
             # Send image with caption
             await update.message.reply_photo(
@@ -59,7 +60,7 @@ async def send_character_response(update, context, text, emotion=None, additiona
             )
 
             # Send voice message (placeholder)
-            # await update.message.reply_text(f"🔊 {voice_message}")
+            await update.message.reply_voice(voice_message)
 
             return True
         except Exception as e:
