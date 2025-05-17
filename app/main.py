@@ -27,7 +27,7 @@ from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 from handlers.idle_state import idle_text
-from handlers.qa_state import qa_text
+from handlers.qa_state import qa_text, qa_voice, qa_image
 from handlers.state_handler import StateHandlerFactory
 from keys import TELEGRAM_KEY
 
@@ -37,7 +37,6 @@ from game_state import GameState, State
 from handlers.input_state import input_image, input_text, input_audio
 from utils.utils import delete_temp_saving
 from utils.query import generate_image
-from utils.image_generation import generate_hangman_image
 
 # Enable logging
 logging.basicConfig(
@@ -144,6 +143,8 @@ def main() -> None:
 
     # QA state
     state_handler.register_handler(State.QA, filters.TEXT & ~filters.COMMAND, qa_text)
+    state_handler.register_handler(State.QA, filters.PHOTO & ~filters.COMMAND, qa_image)
+    state_handler.register_handler(State.QA, filters.VOICE & ~filters.COMMAND, qa_voice)
 
     # Initialize with the starting state (IDLE)
     state_handler.update_handlers(State.IDLE)
@@ -160,6 +161,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # main()
-
-    generate_hangman_image()
+    main()

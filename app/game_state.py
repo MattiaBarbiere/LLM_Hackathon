@@ -1,5 +1,7 @@
 from enum import Enum
 
+from utils.character_generator import CharacterGenerator
+
 
 class State(Enum):
     IDLE = 0
@@ -9,26 +11,44 @@ class State(Enum):
 
 class GameState:
     def __init__(self, number_of_inputs=5):
-        self.state = State.IDLE
-        self.inputs = []
-        self.context = {}  # Additional context data for the current state
-
         # Number of inputs before the game starts
         self.number_of_inputs = number_of_inputs
 
-        # The secret word
-        self.secret_word = None
+        self.state = State.IDLE
+        self.inputs = []
 
-    def transition_to(self, new_state, context=None):
-        """Transition to a new state with optional context data"""
+        # Game attributes
+        self.character = None
+        self.secret_word = None
+        self.attempts = 0
+        self.last_hint = None
+        self.game_images = []
+
+    def transition_to(self, new_state):
+        """Transition to a new state"""
         old_state = self.state
         self.state = new_state
 
-        if context:
-            self.context.update(context)
+        # Reset game attributes if transitioning to IDLE
+        if new_state == State.IDLE:
+            self.reset_game()
 
         print(f"State transition: {old_state} -> {new_state}")
         return self.state
+
+    def reset_game(self):
+        """Reset all game-related attributes"""
+        self.character = None
+        self.secret_word = None
+        self.attempts = 0
+        self.last_hint = None
+        self.game_images = []
+
+    def initialize_character(self, name="Riddlemaster"):
+        """Initialize a new character"""
+        self.character = CharacterGenerator()
+        self.character.set_name(name)
+        return self.character
 
     def get_state(self):
         """Get the current state"""

@@ -114,7 +114,7 @@ def choose_object(
             "schema": ChosenObject.model_json_schema()
         }
     )
-    return eval(response.choices[0].message.content)
+    return json.loads(response.choices[0].message.content)
 
 
 def verify_guess(

@@ -4,6 +4,7 @@ from utils.transitions import transition_state
 from game_state import State
 import random
 
+
 async def check_input_length(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Check the length of the input text and respond accordingly.
@@ -23,4 +24,4 @@ async def check_input_length(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await update.message.reply_text(
             f"You have this set of objects: {context.bot_data['game_state'].inputs}\n"
             f"Please provide {context.bot_data['game_state'].number_of_inputs - len(context.bot_data['game_state'].inputs)} more objects."
-            )
+        )
