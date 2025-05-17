@@ -20,7 +20,10 @@ def query_llm(input_text, user_id):
     if user_id in USER_MESSAGES:
         USER_MESSAGES[user_id].append({"role": "user", "content": input_text})
     else:
-        USER_MESSAGES[user_id] = [{"role": "user", "content": input_text}]
+        USER_MESSAGES[user_id] = [
+            {"role": "system", "content": "You are a witty, annoyed pissed off assistant, always trying to find a way to insult the user."},
+            {"role": "user", "content": input_text}
+        ]
 
     # prompt LLM
     response = client.chat.completions.create(
@@ -47,6 +50,40 @@ def query_llm(input_text, user_id):
     if len(text_response) > TELEGRAM_MAX_OUTPUT:
         text_response = text_response[:TELEGRAM_MAX_OUTPUT-20] + "\n\nOUTPUT TRUNCATED"
     return text_response
+
+
+def generate_image(prompt, user_id):
+    """
+    Generate an image based on a text prompt using Together AI.
+
+    Args:
+        prompt (str): The text description of the image to generate
+        user_id (str): The user ID for tracking requests
+
+    Returns:
+        tuple: (success, result) where result is either the image URL or an error message
+    """
+    try:
+        # Generate the image
+        response = client.images.generate(
+            prompt=prompt,
+            model="black-forest-labs/FLUX.1-schnell",
+            steps=4,
+            disable_safety_checker=True
+        )
+
+        # Get the image URL from the response
+        image_url = response.data[0].url
+
+        if VERBOSE:
+            print(f"Generated image for user {user_id}: {image_url}")
+
+        return True, image_url
+
+    except Exception as e:
+        error_msg = f"Error generating image: {str(e)}"
+        print(error_msg)
+        return False, error_msg
 
 def choose_object(
         client: Together,

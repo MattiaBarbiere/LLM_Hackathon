@@ -34,6 +34,7 @@ from keys import TELEGRAM_KEY
 from utils.image_utils import delete_saved_photos
 from handlers.input_state import input_image, input_text
 from game_state import GameState
+from utils.query import generate_image
 
 # Enable logging
 logging.basicConfig(
@@ -43,7 +44,6 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
-
 
 # Constants for the bot
 DELETE_PHOTOS = True
@@ -72,6 +72,47 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(update.message.text)
 
 
+async def generate_image_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle the /image command"""
+    # Extract prompt from command arguments
+    if not context.args:
+        await update.message.reply_text(
+            "Please provide a description for the image. Example: /image a beautiful sunset")
+        return
+
+    prompt = " ".join(context.args)
+    user_id = update.message.from_user.id
+
+    # Send a "generating" message first to show the bot is working
+    message = await update.message.reply_text(f"Generating image of: {prompt}...")
+
+    # Call image generation function
+    success, result = generate_image(prompt, user_id)
+
+    if success:
+        try:
+            # Download the image
+            import requests
+            from io import BytesIO
+
+            image_response = requests.get(result)
+            image_data = BytesIO(image_response.content)
+
+            # Send the image
+            await update.message.reply_photo(
+                photo=image_data,
+                caption=f"Generated image for: \"{prompt}\"\nModel: FLUX.1-schnell"
+            )
+
+            # Delete the "generating" message
+            await message.delete()
+        except Exception as e:
+            await message.edit_text(f"Error downloading image: {str(e)}")
+    else:
+        # If image generation failed, update the message with the error
+        await message.edit_text(result)
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Application and pass it your bot's token.
@@ -83,6 +124,7 @@ def main() -> None:
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("image", generate_image_command))
 
     # on non command i.e message - echo the message on Telegram
     application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND, input_image, block=True))

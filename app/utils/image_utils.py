@@ -1,6 +1,7 @@
 import os
 import base64
 
+
 def delete_saved_photos():
     """
     Deletes all saved photos in the app/saved_photos directory.
