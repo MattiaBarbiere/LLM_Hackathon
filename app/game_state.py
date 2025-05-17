@@ -8,6 +8,6 @@ class State(Enum):
 
 
 class GameState:
-    state: State = State.IDLE
+    state: State = State.QA
 
     inputs: list = []

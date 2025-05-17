@@ -19,7 +19,7 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     """
     Handle the case when the state in INPUT and we receive an image.
     """
-    
+
     photo_file = await update.message.photo[-1].get_file()
 
     # load image into numpy array
@@ -36,6 +36,7 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # respond photo
     await update.message.reply_photo(tmp_photo, caption=f"Image shape: {img.shape}")
 
+
 async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Handle the case when the state in INPUT and we receive a text.
@@ -44,16 +45,16 @@ async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     input_text = update.message.text
 
     response = client.chat.completions.create(
-        model = "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
+        model="meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
         messages=[
             {"role": "system", "content": "You are given a prompt from the user. You must take that prompt and "
-            "answer back the list of objects that were written in the prompt. They must be separated by commas."
-            "Your answer must be in the format: 'object1, object2, object3'."},
+                                          "answer back the list of objects that were written in the prompt. They must be separated by commas."
+                                          "Your answer must be in the format: 'object1, object2, object3'."},
             {"role": "user", "content": f"{input_text}"},
         ]
     )
     text = response.choices[0].message.content.split(", ")
-    
+
     # Save the text to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(text)
 
