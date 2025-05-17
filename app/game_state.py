@@ -44,11 +44,21 @@ class GameState:
 
     def reset_game(self):
         """Reset all game-related attributes"""
+        self.state = State.INPUT
+        self.inputs = []
+
+        # Game attributes
         self.character = None
         self.secret_word = None
         self.attempts = 0
         self.last_hint = None
         self.game_images = []
+
+        # The guesses made by the user so far
+        self.guesses = []
+
+        # Hint so far
+        self.hints = []
 
     def initialize_character(self, name="Riddlemaster"):
         """Initialize a new character"""

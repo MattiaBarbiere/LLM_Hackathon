@@ -526,3 +526,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,idea+all,jetbrains+all,visualstudiocode,linux,windows,macos
+
+app/temp_saving/hint.wav

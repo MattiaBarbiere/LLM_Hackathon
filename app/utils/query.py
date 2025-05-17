@@ -90,7 +90,6 @@ def generate_image(prompt, user_id):
 
 def choose_object(
         image_path: list,
-        model: str,
         n_objects: int = 5
 ) -> dict:
     SystemPrompt = f"""
@@ -106,7 +105,7 @@ def choose_object(
     content_list += [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}]
 
     response = client.chat.completions.create(
-        model=model,
+        model=vision_model,
         messages=[
             {
                 "role": "user",
@@ -201,4 +200,3 @@ def read_hint(
         )
     
     return response.stream_to_file("../../temp_saving/hint.wav")
-    

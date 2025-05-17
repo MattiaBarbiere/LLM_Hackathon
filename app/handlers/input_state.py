@@ -34,7 +34,7 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # img = np.array(Image.open(tmp_photo))
 
     # To object detection
-    object_from_image = choose_object(tmp_photo, model=llm_model)["object"]
+    object_from_image = choose_object(tmp_photo)["object"]
 
     # Get the objects from the image using the LLM
     objects_from_caption = llm_objects_from_text(caption) if caption else []

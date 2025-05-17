@@ -11,6 +11,7 @@ import numpy as np
 import requests
 
 from game_state import State, GameState
+from utils.audio_utils import audio_to_text
 from utils.character_response import send_character_response
 from utils.config import *
 from utils.query import *
@@ -61,12 +62,12 @@ async def process_guess(update, context, guess_text):
         # Determine emotion based on guess result
         if result.get('correct') == True:
             # Win condition
-            await send_character_response(
-                update, context,
-                result['message'],
-                emotion=EmotionalState.HAPPY,
-                additional_context="celebrating with confetti and sparkles"
-            )
+            # await send_character_response(
+            #     update, context,
+            #     result['message'],
+            #     emotion=EmotionalState.HAPPY,
+            #     additional_context="celebrating with confetti and sparkles"
+            # )
 
             # End the game with a win
             await end_game(update, context, win=True, chosen_object=game_state.secret_word)
@@ -108,7 +109,7 @@ async def qa_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     # Get the photo file
     photo_file = await update.message.photo[-1].get_file()
-    photo_path = f"temp/photo_{user_id}.jpg"
+    photo_path = f"temp_saving/photo.jpg"
     await photo_file.download_to_drive(photo_path)
 
     # Check if we're in object selection mode or guessing mode
@@ -118,7 +119,7 @@ async def qa_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         message = await update.message.reply_text("Looking at the image and choosing an object...")
 
         # Select an object from the image
-        result = choose_object(photo_path, "meta-llama/Meta-Llama-3.1-Vision-8B")
+        result = choose_object(photo_path)
         chosen_object = result.get('object', '')
 
         # Store the chosen object and image
@@ -146,7 +147,7 @@ async def qa_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         message = await update.message.reply_text("Looking at your image to understand your guess...")
 
         # Use vision model to describe the image
-        description = describe_image(photo_path, "meta-llama/Meta-Llama-3.1-Vision-8B")
+        description = describe_image(photo_path, vision_model)
 
         # Update message
         await message.edit_text(f"I see: {description}")
@@ -161,7 +162,7 @@ async def qa_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     # Get voice message
     voice_file = await update.message.voice.get_file()
-    voice_path = f"temp/voice_{user_id}.ogg"
+    voice_path = f"./temp_saving/audio.wav"
     await voice_file.download_to_drive(voice_path)
 
     # Send a loading message
@@ -169,7 +170,7 @@ async def qa_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     # Here you would transcribe the voice message
     # This is a placeholder - you'd need to implement actual speech-to-text
-    transcribed_text = transcribe_audio(voice_path)
+    transcribed_text = audio_to_text(voice_path)
 
     # Update the loading message
     await message.edit_text(f"I heard: \"{transcribed_text}\"")
@@ -203,7 +204,7 @@ def describe_image(image_path, model):
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "Describe this image in a few words, focusing on visible objects. Keep it concise."},
+                        {"type": "text", "text": "Describe this image in a few words, focusing on visible objects. Keep it concise. Keep it only to a list of words, objects, purely. Give maximum one word only, the most prominent object. One word"},
                         {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
                     ]
                 }
@@ -218,25 +219,25 @@ def describe_image(image_path, model):
         return "an image"
 
 
-def transcribe_audio(audio_path):
-    """
-    Transcribe audio to text.
-
-    Args:
-        audio_path: Path to the audio file
-
-    Returns:
-        str: Transcribed text
-    """
-    # For now this is a placeholder - you would integrate with your speech-to-text service
-    # This could be OpenAI's Whisper, Together AI's audio API, or another service
-
-    # Placeholder return
-    guesses = [
-        "Is it a chair?",
-        "Could it be a book?",
-        "I think it's a lamp",
-        "Is the object a cup?",
-        "Maybe it's a plant"
-    ]
-    return random.choice(guesses)
+# def transcribe_audio(audio_path):
+#     """
+#     Transcribe audio to text.
+#
+#     Args:
+#         audio_path: Path to the audio file
+#
+#     Returns:
+#         str: Transcribed text
+#     """
+#     # For now this is a placeholder - you would integrate with your speech-to-text service
+#     # This could be OpenAI's Whisper, Together AI's audio API, or another service
+#
+#     # Placeholder return
+#     guesses = [
+#         "Is it a chair?",
+#         "Could it be a book?",
+#         "I think it's a lamp",
+#         "Is the object a cup?",
+#         "Maybe it's a plant"
+#     ]
+#     return random.choice(guesses)
