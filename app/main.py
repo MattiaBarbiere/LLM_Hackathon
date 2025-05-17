@@ -21,10 +21,16 @@ Press Ctrl-C on the command line to stop the bot.
 """
 
 import logging
+import os
 
 from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 from keys import TELEGRAM_KEY
+
+# Our imports
+from utils.image_utils import delete_saved_photos
+from handlers.input_state import input_image, input_text
+from game_state import GameState
 
 # Enable logging
 logging.basicConfig(
@@ -34,6 +40,10 @@ logging.basicConfig(
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
+
+
+# Constants for the bot
+DELETE_PHOTOS = True
 
 
 # Define a few command handlers. These usually take the two arguments update and
@@ -64,15 +74,28 @@ def main() -> None:
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(TELEGRAM_KEY).build()
 
+    # Add our state object to the application so tat we can access it in the handlers
+    application.bot_data["game_state"] = GameState()
+
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
 
     # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND, input_image))
+
+    # If the input is a text, we will handle it in the input state
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, input_text))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+    # Print the inputs attribute of the GameState object
+    print("Inputs: ", application.bot_data["game_state"].inputs)
+
+    # Delete all the files saved in the saved_photos folder
+    if DELETE_PHOTOS:
+        delete_saved_photos()
 
 
 if __name__ == "__main__":
