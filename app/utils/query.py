@@ -125,6 +125,7 @@ def verify_guess(
     print(guess, context.bot_data["game_state"].secret_word)
 
     context.bot_data["game_state"].guesses.append(guess)
+    print(len(context.bot_data["game_state"].guesses))
 
     response = client.chat.completions.create(
         model=llm_model,
@@ -141,6 +142,7 @@ def verify_guess(
                     the player is making fun of you an thus you and you must start making the riddles slightly insulting to the 
                     player so that they are incentivized to guess correctly. Gradually make this hint more and more insulting.
                     The hint should be in the message field if the player has not guessed the correct word.
+                    The hints you have already given are: {context.bot_data["game_state"].hints}. Make the hints different from the previous ones.
 
                     Here is an example iteraction of the game:
 

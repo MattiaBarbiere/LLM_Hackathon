@@ -43,4 +43,5 @@ async def qa_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Handle normal QA interaction
     # response is a dictionary
     response = verify_guess(query, context)
+    context.bot_data["game_state"].hints.append(response['message'])
     await update.message.reply_text(response['message'])
