@@ -86,8 +86,7 @@ def generate_image(prompt, user_id):
         return False, error_msg
 
 def choose_object(
-        client: Together,
-        images: list,
+        image_path: list,
         model: str
 ) -> dict:
     SystemPrompt = """
@@ -98,10 +97,8 @@ def choose_object(
 
     content_list = [{"type": "text", "text": SystemPrompt}]
 
-    for image in images:
-        image_path = os.path.join("./test_images/", image)
-        base64_image = encode_image_to_base64(image_path)
-        content_list += [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}]
+    base64_image = encode_image_to_base64(image_path)
+    content_list += [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}]
 
     response = client.chat.completions.create(
         model=model,
