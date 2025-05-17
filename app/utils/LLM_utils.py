@@ -1,6 +1,6 @@
 import json
 from pydantic import BaseModel, Field
-from utils import client
+from utils.config import client
 
 # Define the schema for the output
 class ImageDescription(BaseModel):
@@ -14,7 +14,6 @@ def llm_objects_from_text(input_text: str,
     """
     Ask the LLM for a list of objects in the input text.
     """
-
     
     response = client.chat.completions.create(
         model=model,
@@ -33,7 +32,6 @@ def llm_objects_from_text(input_text: str,
         }
     )
     output = json.loads(response.choices[0].message.content)
-    
     return output["objects"]
     
     

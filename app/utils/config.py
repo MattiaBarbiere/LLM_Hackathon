@@ -2,7 +2,7 @@ import torch
 
 # Together.ai imports
 from together import Together
-from keys import TOGETHER_AI
+from keys import TOGETHER_AI, HUGGING_FACE_KEY
 
 MAX_CHAT_HISTORY = 10
 VERBOSE = True
@@ -19,3 +19,9 @@ llm_model = "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
 client = Together(
     api_key=TOGETHER_AI,
 )
+
+# Hugging Face imports
+API_URL = "https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3"
+headers = {
+    "Authorization": f"Bearer {HUGGING_FACE_KEY}",
+}

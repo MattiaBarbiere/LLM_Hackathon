@@ -31,8 +31,8 @@ from handlers.qa_state import qa_text
 from keys import TELEGRAM_KEY
 
 # Our imports
-from utils.image_utils import delete_saved_photos
-from handlers.input_state import input_image, input_text
+from utils.utils import delete_temp_saving
+from handlers.input_state import input_image, input_text, input_audio
 from game_state import GameState
 
 # Enable logging
@@ -88,7 +88,10 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND, input_image, block=True))
 
     # If the input is a text, we will handle it in the input state
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, msg_handler_text, block=True))
+    application.add_handler(MessageHandler(filters.TEXT  & ~filters.COMMAND, input_text, block=True))
+
+    # If the input is an audio, we will handle it in the input state
+    application.add_handler(MessageHandler(filters.VOICE & ~filters.COMMAND, input_audio, block=True))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
@@ -98,7 +101,7 @@ def main() -> None:
 
     # Delete all the files saved in the saved_photos folder
     if DELETE_PHOTOS:
-        delete_saved_photos()
+        delete_temp_saving()
 
 
 if __name__ == "__main__":
