@@ -333,7 +333,13 @@ class CharacterGenerator:
         # In a real implementation, you would call a TTS API with the text and selected voice
 
         print(f"Would generate voice message with voice '{self.voice}' saying: {text}")
-        return f"[Voice message using {self.voice} voice: {text}]"
+
+        response = response = client.audio.speech.create(
+            model="cartesia/sonic",
+            input=text,
+            voice=self.voice,
+        )
+        return response.stream_to_file("../../temp_saving/hint.wav")
 
     def to_dict(self) -> Dict:
         """Convert character to dictionary for storage"""
