@@ -9,3 +9,5 @@ class State(Enum):
 
 class GameState:
     state: State = State.IDLE
+
+    inputs: list = []
