@@ -175,3 +175,24 @@ def verify_guess(
         }
     )
     return json.loads(response.choices[0].message.content)
+
+
+def read_hint(
+        model: str,
+        guess_dict: dict
+):
+    if guess_dict["correct"] == 1:
+        response = client.audio.speech.create(
+            model=model,
+            input=guess_dict["message"],
+            voice="wise man"
+        )
+    else:
+        response = client.audio.speech.create(
+            model=model,
+            input=guess_dict["message"],
+            voice="doctor mischief"
+        )
+    
+    return response.stream_to_file("../../temp_saving/hint.wav")
+    
