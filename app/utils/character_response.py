@@ -51,7 +51,7 @@ async def send_character_response(update, context, text, emotion=None, additiona
 
             # Generate voice message
             voice_message = character.generate_voice_message(text)
-            voice_message = audiofile.read(voice_message, always_2d=True)
+            voice_message = audiofile.read("../../temp_saving/hint.wav", always_2d=True)
 
             # Send image with caption
             await update.message.reply_photo(
