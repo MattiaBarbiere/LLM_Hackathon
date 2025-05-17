@@ -26,14 +26,16 @@ import os
 from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
 
-from handlers.msg_handler import msg_handler_text
+from handlers.idle_state import idle_text
 from handlers.qa_state import qa_text
+from handlers.state_handler import StateHandlerFactory
 from keys import TELEGRAM_KEY
 
 # Our imports
 from utils.utils import delete_temp_saving
+from game_state import GameState, State
 from handlers.input_state import input_image, input_text, input_audio
-from game_state import GameState
+from utils.utils import delete_temp_saving
 from utils.query import generate_image
 
 # Enable logging
@@ -118,24 +120,34 @@ def main() -> None:
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(TELEGRAM_KEY).build()
 
-    # Add our state object to the application so that we can access it in the handlers
+    # Add our state object to the application
     application.bot_data["game_state"] = GameState()
 
-    # on different commands - answer in Telegram
+    # Create state handler factory
+    state_handler = StateHandlerFactory(application)
+    application.bot_data["state_handler"] = state_handler
+
+    # Register command handlers (these are global and not state-dependent)
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("image", generate_image_command))
 
-    # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND, input_image, block=True))
+    # Register state-specific handlers
+    # IDLE state
+    state_handler.register_handler(State.IDLE, filters.TEXT & ~filters.COMMAND, idle_text)
 
-    # If the input is a text, we will handle it in the input state
-    application.add_handler(MessageHandler(filters.TEXT  & ~filters.COMMAND, input_text, block=True))
+    # INPUT state
+    state_handler.register_handler(State.INPUT, filters.TEXT & ~filters.COMMAND, input_text)
+    state_handler.register_handler(State.INPUT, filters.PHOTO & ~filters.COMMAND, input_image)
+    state_handler.register_handler(State.INPUT, filters.VOICE & ~filters.COMMAND, input_audio)
 
-    # If the input is an audio, we will handle it in the input state
-    application.add_handler(MessageHandler(filters.VOICE & ~filters.COMMAND, input_audio, block=True))
+    # QA state
+    state_handler.register_handler(State.QA, filters.TEXT & ~filters.COMMAND, qa_text)
 
-    # Run the bot until the user presses Ctrl-C
+    # Initialize with the starting state (IDLE)
+    state_handler.update_handlers(State.IDLE)
+
+    # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
     # Print the inputs attribute of the GameState object

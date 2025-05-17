@@ -4,10 +4,12 @@ from telegram.ext import ContextTypes
 from PIL import Image
 import numpy as np
 
+from game_state import State
 # Our imports
 from utils.LLM_utils import llm_objects_from_text
 from utils.audio_utils import audio_to_text
 from utils.config import API_URL, headers
+from utils.transitions import transition_state
 
 DEBUG = True
 
@@ -66,8 +68,16 @@ async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     # Save the text to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(text)
 
+    if len(context.bot_data["game_state"].inputs) > 2:
+        await transition_state(
+            update,
+            context,
+            State.QA,
+            message=f"Got: {context.bot_data["game_state"].inputs}\nEnough inputs, now to the Q&A State!"
+        )
     # respond text
     await update.message.reply_text(f"Text received: {input_text}")
+
 
 async def input_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
