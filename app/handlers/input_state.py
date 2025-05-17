@@ -22,7 +22,7 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     """
     Handle the case when the state in INPUT and we receive an image.
     """
-    
+
     photo_file = await update.message.photo[-1].get_file()
 
     # load image into numpy array
@@ -38,6 +38,7 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     # respond photo
     await update.message.reply_photo(tmp_photo, caption=f"Image shape: {img.shape}")
+
 
 async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """

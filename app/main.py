@@ -25,6 +25,9 @@ import os
 
 from telegram import ForceReply, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+
+from handlers.msg_handler import msg_handler_text
+from handlers.qa_state import qa_text
 from keys import TELEGRAM_KEY
 
 # Our imports
@@ -74,7 +77,7 @@ def main() -> None:
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(TELEGRAM_KEY).build()
 
-    # Add our state object to the application so tat we can access it in the handlers
+    # Add our state object to the application so that we can access it in the handlers
     application.bot_data["game_state"] = GameState()
 
     # on different commands - answer in Telegram
@@ -82,10 +85,10 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
 
     # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND, input_image))
+    application.add_handler(MessageHandler(filters.PHOTO & ~filters.COMMAND, input_image, block=True))
 
     # If the input is a text, we will handle it in the input state
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, input_text))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, msg_handler_text, block=True))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
