@@ -3,15 +3,18 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from PIL import Image
 import numpy as np
+import requests
+from keys import HUGGING_FACE_KEY
+import time
 
-# Together.ai imports
-from together import Together
-from keys import TOGETHER_AI
 
-# auth defaults to os.environ.get("TOGETHER_API_KEY")
-client = Together(
-    api_key=TOGETHER_AI,
-)
+API_URL = "https://router.huggingface.co/hf-inference/models/openai/whisper-large-v3"
+headers = {
+    "Authorization": f"Bearer {HUGGING_FACE_KEY}",
+}
+
+# Our imports
+from utils.LLM_utils import llm_objects_from_text
 
 
 # Handle for the input state of the app if the input is an image
@@ -43,19 +46,25 @@ async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     # Get the text from the update
     input_text = update.message.text
 
-    response = client.chat.completions.create(
-        model = "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
-        messages=[
-            {"role": "system", "content": "You are given a prompt from the user. You must take that prompt and "
-            "answer back the list of objects that were written in the prompt. They must be separated by commas."
-            "Your answer must be in the format: 'object1, object2, object3'."},
-            {"role": "user", "content": f"{input_text}"},
-        ]
-    )
-    text = response.choices[0].message.content.split(", ")
+    # Get the objects from the text using the LLM
+    text = llm_objects_from_text(input_text)
+
+    print(f"Text: {text}")
     
     # Save the text to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(text)
 
     # respond text
     await update.message.reply_text(f"Text received: {input_text}")
+
+async def input_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Handle the case when the state in INPUT and we receive an audio.
+    """
+    # Get the audio from the update
+    audio_file = await update.message.audio[-1].get_file()
+
+    
+
+    # respond audio
+    await update.message.reply_audio(tmp_audio, caption="Audio received")
