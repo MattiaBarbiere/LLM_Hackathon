@@ -121,7 +121,7 @@ def main() -> None:
     application = Application.builder().token(TELEGRAM_KEY).build()
 
     # Add our state object to the application
-    application.bot_data["game_state"] = GameState()
+    application.bot_data["game_state"] = GameState(number_of_inputs=5)
 
     # Create state handler factory
     state_handler = StateHandlerFactory(application)
@@ -145,7 +145,7 @@ def main() -> None:
     state_handler.register_handler(State.QA, filters.TEXT & ~filters.COMMAND, qa_text)
 
     # Initialize with the starting state (IDLE)
-    state_handler.update_handlers(State.IDLE)
+    state_handler.update_handlers(State.INPUT)
 
     # Run the bot
     application.run_polling(allowed_updates=Update.ALL_TYPES)

@@ -1,11 +1,6 @@
 import json
-from pydantic import BaseModel, Field
 from utils.config import client
-
-# Define the schema for the output
-class ImageDescription(BaseModel):
-    objects: list[str] = Field(description="The objects in the prompt. The format is: 'object1, object2, object3'")
-    extra_words: int = Field(description="All other words in the prompt.")
+from utils.types import ObjectToList
 
 def llm_objects_from_text(input_text: str,
                         # model: str = "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
@@ -28,7 +23,7 @@ def llm_objects_from_text(input_text: str,
         ],
         response_format={
             "type": "json_object",
-            "schema": ImageDescription.model_json_schema(),
+            "schema": ObjectToList.model_json_schema(),
         }
     )
     output = json.loads(response.choices[0].message.content)

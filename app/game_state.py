@@ -8,10 +8,16 @@ class State(Enum):
 
 
 class GameState:
-    def __init__(self):
+    def __init__(self, number_of_inputs=5):
         self.state = State.IDLE
         self.inputs = []
         self.context = {}  # Additional context data for the current state
+
+        # Number of inputs before the the game starts
+        self.number_of_inputs = number_of_inputs
+
+        # The secret word
+        self.secret_word = None
 
     def transition_to(self, new_state, context=None):
         """Transition to a new state with optional context data"""

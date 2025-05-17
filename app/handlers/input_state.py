@@ -8,8 +8,8 @@ from utils.LLM_utils import llm_objects_from_text
 from utils.audio_utils import audio_to_text
 from utils.query import choose_object
 from utils.config import llm_model
-from utils.config import API_URL, headers
 from utils.transitions import transition_state
+from utils.input_utils import check_input_length
 
 DEBUG = True
 
@@ -46,8 +46,8 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # Save the objects to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(object_and_caption)
 
-    # respond photo
-    await update.message.reply_text(f"Text received: {object_and_caption}")
+    # Respond to the user
+    await check_input_length(update, context)
 
 
 async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -68,15 +68,8 @@ async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     # Save the text to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(text)
 
-    if len(context.bot_data["game_state"].inputs) > 2:
-        await transition_state(
-            update,
-            context,
-            State.QA,
-            message=f"Got: {context.bot_data["game_state"].inputs}\nEnough inputs, now to the Q&A State!"
-        )
-    # respond text
-    await update.message.reply_text(f"Text received: {input_text}")
+    # Respond to the user
+    await check_input_length(update, context)
 
 
 async def input_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -105,5 +98,5 @@ async def input_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # Save the objects to the inputs list in the game state
     context.bot_data["game_state"].inputs.extend(objects)
 
-    # respond audio
-    await update.message.reply_text(f"Text received: {text}")
+    # Respond to the user
+    await check_input_length(update, context)
