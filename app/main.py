@@ -160,7 +160,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    # main()
+    main()
 
     # generate_hangman_image()
-    print(generate_riddle())
+    # print(generate_riddle())
