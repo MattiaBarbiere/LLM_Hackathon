@@ -90,12 +90,14 @@ def generate_image(prompt, user_id):
 
 def choose_object(
         image_path: list,
-        model: str
+        model: str,
+        n_objects: int = 5
 ) -> dict:
-    SystemPrompt = """
+    SystemPrompt = f"""
         You are an AI game engine. We are going to play 'I spy with my little eye'. 
-        I will give you a list of images and you will have to choose an object you see in one of these images and return it to me. 
-        In your response, you should only return the name of the object you see in the image. Try to keep the input limited to one word.
+        I will give you a list of images and you will have to choose {n_objects} objects you see in one of these images and return it to me
+        in a list. 
+        In your response, you should only return the list with the objects you see in the image. Return only this list
     """
 
     content_list = [{"type": "text", "text": SystemPrompt}]
@@ -125,6 +127,7 @@ def verify_guess(
     print(guess, context.bot_data["game_state"].secret_word)
 
     context.bot_data["game_state"].guesses.append(guess)
+    print(len(context.bot_data["game_state"].guesses))
 
     response = client.chat.completions.create(
         model=llm_model,
@@ -141,6 +144,7 @@ def verify_guess(
                     the player is making fun of you an thus you and you must start making the riddles slightly insulting to the 
                     player so that they are incentivized to guess correctly. Gradually make this hint more and more insulting.
                     The hint should be in the message field if the player has not guessed the correct word.
+                    The hints you have already given are: {context.bot_data["game_state"].hints}. Make the hints different from the previous ones.
 
                     Here is an example iteraction of the game:
 

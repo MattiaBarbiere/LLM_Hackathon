@@ -86,6 +86,11 @@ async def qa_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             "Let's play a guessing game! Send me an image and I'll choose an object for you to guess.",
             emotion=EmotionalState.EXCITED
         )
+    # Handle normal QA interaction
+    # response is a dictionary
+    response = verify_guess(query, context)
+    context.bot_data["game_state"].hints.append(response['message'])
+    await update.message.reply_text(response['message'])
 
 
 async def qa_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

@@ -24,8 +24,14 @@ class GameState:
         self.last_hint = None
         self.game_images = []
 
-    def transition_to(self, new_state):
-        """Transition to a new state"""
+        # The guesses made by the user so far
+        self.guesses = []
+
+        # Hint so far
+        self.hints = []
+
+    def transition_to(self, new_state, context=None):
+        """Transition to a new state with optional context data"""
         old_state = self.state
         self.state = new_state
 

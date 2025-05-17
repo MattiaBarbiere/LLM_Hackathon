@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 # define type for the return of the model once it chooses image
 class ChosenObject(BaseModel):
-    object: str = Field("The object chosen from the image.")
+    object: list[str] = Field("The object chosen from the image.")
 
 
 # pydantic type to verify if the user's guess is correct or not
