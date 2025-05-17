@@ -14,7 +14,7 @@ class GameState:
         # Number of inputs before the game starts
         self.number_of_inputs = number_of_inputs
 
-        self.state = State.IDLE
+        self.state = State.INPUT
         self.inputs = []
 
         # Game attributes

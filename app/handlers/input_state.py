@@ -1,4 +1,6 @@
 import logging
+import os
+
 from telegram import Update
 from telegram.ext import ContextTypes
 
@@ -26,6 +28,7 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     caption = update.message.caption if update.message.caption else ""
 
     # load image into numpy array
+    os.makedirs("./temp_saving", exist_ok=True)
     tmp_photo = "./temp_saving/tmp_photo.jpg"
     await photo_file.download_to_drive(tmp_photo)
     # img = np.array(Image.open(tmp_photo))

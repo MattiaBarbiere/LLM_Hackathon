@@ -1,3 +1,5 @@
+import os
+
 import requests
 from io import BytesIO
 from utils.character_generator import EmotionalState
@@ -49,18 +51,24 @@ async def send_character_response(update, context, text, emotion=None, additiona
             image_response = requests.get(image_url)
             image_data = BytesIO(image_response.content)
 
+            # Ensure temp directory exists
+            os.makedirs("./temp_saving", exist_ok=True)
+
             # Generate voice message
-            voice_message = character.generate_voice_message(text)
-            voice_message = audiofile.read("../../temp_saving/hint.wav", always_2d=True)
+            character.generate_voice_message(text)
+
+            # Use the file path directly instead of loading it as an array
+            voice_file_path = "./temp_saving/hint.wav"
 
             # Send image with caption
             await update.message.reply_photo(
                 photo=image_data,
-                # caption=voice_message
+                caption=None
             )
 
-            # Send voice message (placeholder)
-            await update.message.reply_voice(voice_message)
+            # Send voice message using the file path
+            with open(voice_file_path, 'rb') as voice_file:
+                await update.message.reply_voice(voice_file)
 
             return True
         except Exception as e:
