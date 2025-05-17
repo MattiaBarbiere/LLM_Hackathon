@@ -1,13 +1,12 @@
 import logging
 from telegram import Update
 from telegram.ext import ContextTypes
-from PIL import Image
-import numpy as np
 
 # Our imports
 from utils.LLM_utils import llm_objects_from_text
 from utils.audio_utils import audio_to_text
-from utils.config import API_URL, headers
+from utils.query import choose_object
+from utils.config import llm_model
 
 DEBUG = True
 
@@ -26,26 +25,21 @@ async def input_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # load image into numpy array
     tmp_photo = "app/temp_saving/tmp_photo.jpg"
     await photo_file.download_to_drive(tmp_photo)
-    img = np.array(Image.open(tmp_photo))
+    # img = np.array(Image.open(tmp_photo))
 
     # To object detection
-    # ...
-    # caption += object_list
-
-    # Ask the LLM for a list of objects in the image
-    output = llm_objects_from_text(caption)
+    dict_objects = choose_object(tmp_photo, model=llm_model)
 
     # Print the output if DEBUG is True
     if DEBUG:
         logging.info(f"Image: {tmp_photo}")
         logging.info(f"Caption: {caption}")
-        logging.info(f"Output: {output}")
 
     # Save the objects to the inputs list in the game state
-    context.bot_data["game_state"].inputs.extend(output)
+    context.bot_data["game_state"].inputs.extend(dict_objects["object"])
 
     # respond photo
-    await update.message.reply_photo(tmp_photo, caption=f"Image shape: {img.shape}")
+    await update.message.reply_text(f"Text received: {dict_objects["object"]}")
 
 
 async def input_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
