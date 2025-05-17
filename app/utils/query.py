@@ -90,12 +90,14 @@ def generate_image(prompt, user_id):
 
 def choose_object(
         image_path: list,
-        model: str
+        model: str,
+        n_objects: int = 5
 ) -> dict:
-    SystemPrompt = """
+    SystemPrompt = f"""
         You are an AI game engine. We are going to play 'I spy with my little eye'. 
-        I will give you a list of images and you will have to choose an object you see in one of these images and return it to me. 
-        In your response, you should only return the name of the object you see in the image. Try to keep the input limited to one word.
+        I will give you a list of images and you will have to choose {n_objects} objects you see in one of these images and return it to me
+        in a list. 
+        In your response, you should only return the list with the objects you see in the image. Return only this list
     """
 
     content_list = [{"type": "text", "text": SystemPrompt}]
