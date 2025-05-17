@@ -334,12 +334,12 @@ class CharacterGenerator:
 
         print(f"Would generate voice message with voice '{self.voice}' saying: {text}")
 
-        response = response = client.audio.speech.create(
+        response = client.audio.speech.create(
             model="cartesia/sonic",
             input=text,
             voice=self.voice,
         )
-        return response.stream_to_file("../../temp_saving/hint.wav")
+        return response.stream_to_file("./temp_saving/hint.wav")
 
     def to_dict(self) -> Dict:
         """Convert character to dictionary for storage"""

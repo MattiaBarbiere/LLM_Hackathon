@@ -3,6 +3,7 @@ from io import BytesIO
 from utils.character_generator import EmotionalState
 import random
 
+
 async def send_character_response(update, context, text, emotion=None, additional_context=""):
     """
     Send a response with character image and voice message.
@@ -54,11 +55,11 @@ async def send_character_response(update, context, text, emotion=None, additiona
             # Send image with caption
             await update.message.reply_photo(
                 photo=image_data,
-                caption=text
+                # caption=voice_message
             )
 
             # Send voice message (placeholder)
-            await update.message.reply_text(f"🔊 {voice_message}")
+            # await update.message.reply_text(f"🔊 {voice_message}")
 
             return True
         except Exception as e:

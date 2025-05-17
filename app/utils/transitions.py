@@ -1,3 +1,5 @@
+import random
+
 from game_state import State
 import requests
 from io import BytesIO
@@ -126,3 +128,60 @@ async def transition_state(update, context, target_state, message=None):
     except Exception as e:
         print(f"Error during state transition: {str(e)}")
         return False
+
+
+async def end_game(update, context, win=False, chosen_object=None):
+    """
+    End the game with appropriate celebration or commiseration
+    """
+    game_state = context.bot_data["game_state"]
+
+    # Save the object for reference
+    if not chosen_object and game_state.secret_word:
+        chosen_object = game_state.secret_word
+
+    if win:
+        # Create winning celebration response
+        emotion = EmotionalState.HAPPY
+        additional_context = "celebrating with confetti and sparkles in a victory pose"
+
+        # Different winning messages for variety
+        win_messages = [
+            f"🎉 Congratulations! You correctly guessed that the object was '{chosen_object}'! You're really observant!",
+            f"🏆 Well done! '{chosen_object}' is exactly right! You've got a good eye!",
+            f"✨ Amazing! You figured out it was '{chosen_object}'! I'm impressed by your deduction skills!"
+        ]
+        message = random.choice(win_messages)
+
+        # Send celebratory character response
+        await send_character_response(
+            update, context, message, emotion, additional_context
+        )
+
+    else:
+        # Create commiseration response
+        emotion = EmotionalState.THOUGHTFUL
+        additional_context = "looking slightly disappointed but encouraging"
+
+        # Different losing messages
+        lose_messages = [
+            f"Game over! The object I chose was '{chosen_object}'. Better luck next time!",
+            f"Time's up! I was thinking of '{chosen_object}'. Maybe you'll guess it next time!",
+            f"That was a tough one! The object was '{chosen_object}'. Want to try again with a new image?"
+        ]
+        message = random.choice(lose_messages)
+
+        # Send commiseration character response
+        await send_character_response(
+            update, context, message, emotion, additional_context
+        )
+
+    # Wait a moment for the user to read the message
+    import asyncio
+    await asyncio.sleep(2)
+
+    # Transition to IDLE state
+    await transition_state(
+        update, context, State.IDLE,
+        message="Type 'start game' or send an image to play again."
+    )
